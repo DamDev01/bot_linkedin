@@ -11,6 +11,20 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
+from modules.linkedin_selectors import (
+    SELETOR_BOTAO_SEGUIR_LINKEDIN,
+    SELETOR_BOTAO_SEGUINDO_EMPRESA_LINKEDIN,
+    SELETOR_SPAN_PRIMEIRO_CONTATO_LINKEDIN,
+    SELETOR_BOTAO_CONECTAR_LINKEDIN,
+    SELETOR_BOTAO_PENDENTE_LINKEDIN,
+    SELETOR_BOTAO_MAIS_LINKEDIN,
+    SELETOR_BOTAO_MAIS_CONECTAR_LINKEDIN,
+    SELETOR_BOTAO_ADICIONAR_NOTA_LINKEDIN,
+    SELETOR_TEXT_AREA_LINKEDIN,
+    SELETOR_BOTAO_ENVIAR_MENSAGEM_LINKEDIN,
+    SELETOR_BOTAO_FECHAR_MENSAGEM_LINKEDIN,
+    SELETOR_ELEMENTO_EMPRESA_ATUAL_LINKEDIN
+)
 
 class LinkedInBot:
     def __init__(self):
@@ -354,23 +368,26 @@ class LinkedInBot:
 
             # --- Definição de múltiplos localizadores para cada ação ---
             pendente_locators = [
-                (By.XPATH, "//button[contains(., 'Pendente')]"),
-                (By.CSS_SELECTOR, "button[aria-label*='Pendente']")
+                (By.XPATH, "//button[contains(., 'Pendente')]") ,
+                (By.CSS_SELECTOR, "button[aria-label*='Pendente']"),
+                (By.XPATH, SELETOR_BOTAO_PENDENTE_LINKEDIN.replace('xpath=', ''))
             ]
             conectar_locators = [
-                (By.XPATH, "//button[.//span[text()='Conectar']]"),
-                (By.XPATH, "//button[contains(., 'Conectar')]"),
-                (By.CSS_SELECTOR, ".pvs-profile-actions button[aria-label*='Conectar']")
+                (By.XPATH, "//button[.//span[text()='Conectar']]") ,
+                (By.XPATH, "//button[contains(., 'Conectar')]") ,
+                (By.CSS_SELECTOR, ".pvs-profile-actions button[aria-label*='Conectar']"),
+                (By.XPATH, SELETOR_BOTAO_CONECTAR_LINKEDIN.replace('xpath=', ''))
             ]
             seguir_locators = [
-                (By.XPATH, "//button[.//span[text()='Seguir']]"),
-                (By.XPATH, "//button[contains(., 'Seguir')]"),
-                (By.CSS_SELECTOR, "button[aria-label*='Seguir']")
+                (By.XPATH, "//button[.//span[text()='Seguir']]") ,
+                (By.XPATH, "//button[contains(., 'Seguir')]") ,
+                (By.CSS_SELECTOR, "button[aria-label*='Seguir']"),
+                (By.XPATH, SELETOR_BOTAO_SEGUIR_LINKEDIN.replace('xpath=', ''))
             ]
             mensagem_locators = [
                 (By.CSS_SELECTOR, ".pvs-profile-actions .message-anywhere-button"),
-                (By.XPATH, "//a[contains(@href, '/messaging/thread/')]"),
-                 (By.XPATH, "//button[.//span[text()='Mensagem']]")
+                (By.XPATH, "//a[contains(@href, '/messaging/thread/')]") ,
+                (By.XPATH, "//button[.//span[text()='Mensagem']]")
             ]
 
             # --- Lógica de Ação ---
@@ -521,15 +538,35 @@ class LinkedInBot:
                         acao_disponivel = "N/A"
                         element_botao = None
                         try:
-                            botao = resultado.find_element(By.CSS_SELECTOR, ".entity-result__actions button")
-                            if botao.is_displayed() and botao.is_enabled():
-                                texto_botao = botao.text.lower()
-                                if "conectar" in texto_botao: acao_disponivel = "Conectar"
-                                elif "seguir" in texto_botao: acao_disponivel = "Seguir"
-                                elif "pendente" in texto_botao: acao_disponivel = "Pendente"
-                                elif "mensagem" in texto_botao: acao_disponivel = "Mensagem"
-                                element_botao = botao
-                        except NoSuchElementException:
+                            # Tenta encontrar o botão "Conectar"
+                            try:
+                                botao = resultado.find_element(By.XPATH, ".//button[.//span[text()='Conectar']]")
+                                if botao.is_displayed() and botao.is_enabled():
+                                    acao_disponivel = "Conectar"
+                                    element_botao = botao
+                            except NoSuchElementException:
+                                # Se não encontrar "Conectar", tenta "Seguir"
+                                try:
+                                    botao = resultado.find_element(By.XPATH, ".//button[.//span[text()='Seguir']]")
+                                    if botao.is_displayed() and botao.is_enabled():
+                                        acao_disponivel = "Seguir"
+                                        element_botao = botao
+                                except NoSuchElementException:
+                                    # Se não encontrar "Seguir", tenta outros estados
+                                    try:
+                                        botao = resultado.find_element(By.XPATH, ".//button[.//span[text()='Pendente']]")
+                                        if botao.is_displayed() and botao.is_enabled():
+                                            acao_disponivel = "Pendente"
+                                            element_botao = botao
+                                    except NoSuchElementException:
+                                        try:
+                                            botao = resultado.find_element(By.XPATH, ".//button[.//span[text()='Mensagem']]")
+                                            if botao.is_displayed() and botao.is_enabled():
+                                                acao_disponivel = "Mensagem"
+                                                element_botao = botao
+                                        except NoSuchElementException:
+                                            acao_disponivel = "Indisponível"
+                        except Exception:
                             acao_disponivel = "Indisponível"
                         
                         perfil_data = {
