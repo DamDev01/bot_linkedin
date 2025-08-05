@@ -217,9 +217,6 @@ class LinkedInBot:
             
             # Múltiplos seletores para tentar encontrar os containers de resultados
             seletores_containers = [
-                # Seletores baseados na estrutura real
-                "div.kmMsdlbAGHkjvvrTbWLMdhgCSYZwudWehA",
-                "li.reusable-search__result-container",
                 "ul.reusable-search__results-container > li.reusable-search__result-container",
                 "div.search-results-container li.reusable-search__result-container",
                 "div.search-results-container .reusable-search__result-container",
@@ -246,121 +243,54 @@ class LinkedInBot:
             
             for i, container in enumerate(containers):
                 try:
-                    # Nome - usando seletores da estrutura real
+                    # Nome
                     nome = ""
                     try:
-                        # Tenta múltiplos seletores para nome
-                        nome_seletores = [
-                            "span.qJUbDXqGJZaczRKXFbzzgIEPDsgtJHCkMtxzEQHpE span[aria-hidden='true']",
-                            ".qJUbDXqGJZaczRKXFbzzgIEPDsgtJHCkMtxzEQHpE span[aria-hidden='true']",
-                            "span[aria-hidden='true']:not(.entity-result__badge-text)",
-                            ".lhkwFyjBTqTdvFSrdUrjMXAkQLek span[aria-hidden='true']",
-                            "span[aria-hidden='true']"
-                        ]
-                        
-                        for seletor in nome_seletores:
-                            try:
-                                elementos = container.find_elements(By.CSS_SELECTOR, seletor)
-                                for elemento in elementos:
-                                    nome = elemento.text.strip()
-                                    if nome and len(nome) > 2 and not nome.startswith('•'):
-                                        break
-                                if nome and len(nome) > 2 and not nome.startswith('•'):
-                                    break
-                            except:
-                                continue
+                        nome_element = container.find_element(By.CSS_SELECTOR, "span[aria-hidden='true']")
+                        nome = nome_element.text.strip()
                     except:
                         pass
                     
-                    # Cargo - usando seletores da estrutura real
+                    # Cargo
                     cargo = ""
                     try:
-                        cargo_seletores = [
-                            "div.QsesiUeoTHbdRqjNxzjbTYbqpsIRYkvYuI",
-                            ".QsesiUeoTHbdRqjNxzjbTYbqpsIRYkvYuI",
-                            ".entity-result__primary-subtitle",
-                            ".t-14.t-black.t-normal"
-                        ]
-                        
-                        for seletor in cargo_seletores:
-                            try:
-                                elemento = container.find_element(By.CSS_SELECTOR, seletor)
-                                cargo = elemento.text.strip()
-                                if cargo:
-                                    break
-                            except:
-                                continue
+                        cargo_element = container.find_element(By.CSS_SELECTOR, ".entity-result__primary-subtitle")
+                        cargo = cargo_element.text.strip()
                     except:
                         pass
                     
-                    # Localização - usando seletores da estrutura real
+                    # Localização
                     localizacao = ""
                     try:
-                        localizacao_seletores = [
-                            "div.eaPHdPzxZUWfDKeYyiiUxvCQeNzOKmhZJM",
-                            ".eaPHdPzxZUWfDKeYyiiUxvCQeNzOKmhZJM",
-                            ".entity-result__secondary-subtitle",
-                            ".t-14.t-normal"
-                        ]
-                        
-                        for seletor in localizacao_seletores:
-                            try:
-                                elemento = container.find_element(By.CSS_SELECTOR, seletor)
-                                localizacao = elemento.text.strip()
-                                if localizacao:
-                                    break
-                            except:
-                                continue
+                        localizacao_element = container.find_element(By.CSS_SELECTOR, ".entity-result__secondary-subtitle")
+                        localizacao = localizacao_element.text.strip()
                     except:
                         pass
                     
-                    # Link - usando seletores da estrutura real
+                    # Link
                     link = ""
                     try:
-                        link_seletores = [
-                            "a.XrBcczxbbctlDvNxyOeSrWsgNCUYGXfTvRc[href*='/in/']",
-                            "a[href*='/in/']"
-                        ]
-                        
-                        for seletor in link_seletores:
-                            try:
-                                link_element = container.find_element(By.CSS_SELECTOR, seletor)
-                                link = link_element.get_attribute('href')
-                                if '?' in link:
-                                    link = link.split('?')[0]
-                                if link:
-                                    break
-                            except:
-                                continue
+                        link_element = container.find_element(By.CSS_SELECTOR, "a[href*='/in/']")
+                        link = link_element.get_attribute('href')
+                        if '?' in link:
+                            link = link.split('?')[0]
                     except:
                         pass
                     
-                    # Ação disponível - usando seletores da estrutura real
+                    # Ação disponível
                     acao_disponivel = "N/A"
                     try:
-                        botao_seletores = [
-                            "button.artdeco-button[aria-label*='Conectar']",
-                            "button.artdeco-button .artdeco-button__text",
-                            ".artdeco-button .artdeco-button__text",
-                            "button.artdeco-button"
-                        ]
-                        
-                        for seletor in botao_seletores:
-                            try:
-                                botao = container.find_element(By.CSS_SELECTOR, seletor)
-                                if botao.is_displayed() and botao.is_enabled():
-                                    texto_botao = botao.text.strip()
-                                    if "Conectar" in texto_botao:
-                                        acao_disponivel = "Conectar"
-                                    elif "Seguir" in texto_botao:
-                                        acao_disponivel = "Seguir"
-                                    elif "Pendente" in texto_botao:
-                                        acao_disponivel = "Pendente"
-                                    elif "Mensagem" in texto_botao:
-                                        acao_disponivel = "Mensagem"
-                                    break
-                            except:
-                                continue
+                        botao = container.find_element(By.CSS_SELECTOR, "button.artdeco-button")
+                        if botao.is_displayed() and botao.is_enabled():
+                            texto_botao = botao.text.strip()
+                            if "Conectar" in texto_botao:
+                                acao_disponivel = "Conectar"
+                            elif "Seguir" in texto_botao:
+                                acao_disponivel = "Seguir"
+                            elif "Pendente" in texto_botao:
+                                acao_disponivel = "Pendente"
+                            elif "Mensagem" in texto_botao:
+                                acao_disponivel = "Mensagem"
                     except:
                         pass
                     
@@ -422,13 +352,7 @@ class LinkedInBot:
                 "ul.reusable-search__results-container",
                 "li.reusable-search__result-container",
                 "div.feed-identity-module",
-                "nav.global-nav",
-                # Novos elementos baseados na estrutura real
-                "div.kmMsdlbAGHkjvvrTbWLMdhgCSYZwudWehA",
-                "span.qJUbDXqGJZaczRKXFbzzgIEPDsgtJHCkMtxzEQHpE",
-                "div.QsesiUeoTHbdRqjNxzjbTYbqpsIRYkvYuI",
-                "div.eaPHdPzxZUWfDKeYyiiUxvCQeNzOKmhZJM",
-                "button.artdeco-button"
+                "nav.global-nav"
             ]
             
             for elemento in elementos_importantes:
