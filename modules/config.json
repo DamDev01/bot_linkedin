@@ -1,0 +1,11 @@
+{
+    "email": "damdev0101@gmail.com",
+    "senha": "bbnn182706",
+    "salvar_senha": true,
+    "intervalo": "7",
+    "acao": "seguir",
+    "limite": "10",
+    "intervalo_aleatorio": true,
+    "ultima_planilha": "C:/Users/super/Desktop/linkedInfluxo/templates/planilha_exemplo.xlsx",
+    "ultima_mensagem": "C:/Users/super/Desktop/linkedInfluxo/templates/mensagem_exemplo.txt"
+}
