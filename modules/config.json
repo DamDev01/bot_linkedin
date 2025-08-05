@@ -1,7 +1,7 @@
 {
-    "email": "damdev0101@gmail.com",
-    "senha": "bbnn182706",
-    "salvar_senha": true,
+    "email": "",
+    "senha": "",
+    "salvar_senha": false,
     "intervalo": "7",
     "acao": "seguir",
     "limite": "10",

@@ -36,6 +36,8 @@ ENV/
 
 # Local configs
 config.local.json
+config.json
+modules/config.json
 
 # Chrome driver and selenium files
 *.crx
